@@ -1,19 +1,8 @@
 #ifndef ALOCATIONHEREDITE_HPP
 #define ALOCATIONHEREDITE_HPP
 
-#include "Server.hpp"
-#include <iostream>
-#include <vector>
-#include <map>
-#include <algorithm>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <sys/stat.h>
-#include <cerrno>
-#include <cstdlib>
-#include <exception>
-#include <unistd.h>
+// #include "Server.hpp"
+#include "Webserv.hpp"
 
 class Location : public Server
 {

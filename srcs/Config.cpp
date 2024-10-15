@@ -1,4 +1,5 @@
-#include "Config.hpp"
+
+#include "Webserv.hpp"
 
 Config::Config()
 {
@@ -103,7 +104,10 @@ void	Config::Settest(int test)
 std::ostream	&operator<<(std::ostream &out, Config &to_write) // rajouter le const apr tt les tests
 {
 	out << "The file name is " << to_write.GetFilename() << std::endl;
-	for (size_t i; i < to_write.GetServer().size(); i++)
+	for (size_t i = 0; i < to_write.GetServer().size(); i++)
+	{
+		std::cout << "LALALA" << std::endl;
 		out << "print server :" << std::endl << *(to_write.GetServer(i + 1)) << std::endl;
+	}
 	return (out);
 }

@@ -1,5 +1,5 @@
-#include "Config.hpp"
-#include "Server.hpp"
+
+#include "Webserv.hpp"
 
 static int	NotaSpaceOrChara(std::string line, char c, int i)
 {
@@ -37,7 +37,7 @@ int Config::ServerNameByServer()
 			}
 		}
 	}
-	return (1);
+	return (0);
 }
 
 int	Config::ParseGlobal()
@@ -48,6 +48,7 @@ int	Config::ParseGlobal()
 
 	if (file.is_open())
 	{
+
 		while (std::getline(file, line))
 		{
 			if (line.empty() || line[0] == '\n') continue;

@@ -1,4 +1,5 @@
-#include "Server.hpp"
+
+#include "Webserv.hpp"
 
 bool Server::IsValidServerName(const std::string& name)
 {

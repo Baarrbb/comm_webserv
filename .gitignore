@@ -1,5 +1,5 @@
 dependence/
 *.d
-obj/
+src/obj/
 *.o
 webserv

@@ -1,5 +1,5 @@
-#include "Server.hpp"
-#include "ALocationheredite.hpp"
+
+#include "Webserv.hpp"
 
 void Server::SetServerName(const std::string& value)
 {

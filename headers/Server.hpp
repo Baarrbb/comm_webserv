@@ -3,19 +3,9 @@
 
 //#include "Location.hpp"
 class Location;
-#include <iostream>
-#include <vector>
-#include <map>
-#include <algorithm>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <sys/stat.h>
-#include <cerrno>
-#include <cstdlib>
-#include <exception>
-#include <unistd.h>
-#include <iterator>
+
+#include "Webserv.hpp"
+
 
 enum Directive {
 	SERVER_NAME,

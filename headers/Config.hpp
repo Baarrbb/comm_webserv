@@ -1,24 +1,9 @@
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
-#include <iostream>
-#include "Server.hpp"
-#include <vector>
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <sys/wait.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <iostream>
-#include <netdb.h>
-#include <cstring>
-#include <poll.h>
-//#include <exception>
+// #include "Server.hpp"
+
+#include "Webserv.hpp"
 
 class Config
 {
