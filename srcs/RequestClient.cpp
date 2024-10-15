@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 17:45:26 by marvin            #+#    #+#             */
-/*   Updated: 2024/10/16 01:23:50 by marvin           ###   ########.fr       */
+/*   Updated: 2024/10/16 01:38:14 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ void	printOptions(std::map<std::string, std::string> options);
 
 RequestClient::RequestClient(std::string &req) : error(0)
 {
-
 	req.erase(req.length() - 1);
 	std::string line = req.substr(0, req.find("\n"));
 
