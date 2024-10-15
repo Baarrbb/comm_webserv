@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 17:45:26 by marvin            #+#    #+#             */
-/*   Updated: 2024/10/15 18:24:31 by marvin           ###   ########.fr       */
+/*   Updated: 2024/10/16 01:23:50 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ void	printOptions(std::map<std::string, std::string> options);
 
 RequestClient::RequestClient(std::string &req) : error(0)
 {
-	std::cout << req << std::endl;
 
 	req.erase(req.length() - 1);
 	std::string line = req.substr(0, req.find("\n"));
@@ -232,31 +231,6 @@ void	RequestClient::othersOptions( std::string next )
 	}
 }
 
-// Return errors
-
-// void	RequestClient::badVersion( void )
-// {
-// 	this->error = 505;
-// 	this->target = "not_found/505.html";
-// }
-
-// void	RequestClient::badRequest( void )
-// {
-// 	this->error = 400;
-// 	this->target = "not_found/400.html";
-// }
-
-// void	RequestClient::notAllowed( void )
-// {
-// 	this->error = 405;
-// 	this->target = "not_found/405.html";
-// }
-
-// void RequestClient::forbidden( void )
-// {
-// 	this->error = 403;
-// 	this->target = "not_found/403.html";
-// }
 
 // Getters
 
@@ -265,16 +239,39 @@ int RequestClient::getError( void )
 	return this->error;
 }
 
-std::string	RequestClient::getTarget( void )
-{
-	return this->target;
-}
-
 std::string	RequestClient::getMsgError( void )
 {
 	return this->msgError;
 }
 
+std::string	RequestClient::getMethod( void )
+{
+	return this->method;
+}
+
+std::string	RequestClient::getTarget( void )
+{
+	return this->target;
+}
+
+std::string	RequestClient::getHost( void )
+{
+	return this->host;
+}
+
+std::string	RequestClient::getOptions( std::string key )
+{
+	std::map<std::string, std::string>::const_iterator it = this->options.find(key);
+	if (it != this->options.end())
+		return it->second;
+	else
+		return "";
+}
+
+std::map<std::string, std::string>	RequestClient::getOptions( void )
+{
+	return this->options;
+}
 
 // Setters
 
@@ -286,6 +283,11 @@ void	RequestClient::setTarget( std::string file )
 void	RequestClient::setError(int err)
 {
 	this->error = err;
+}
+
+void	RequestClient::setMsgError( std::string msg )
+{
+	this->msgError = msg;
 }
 
 

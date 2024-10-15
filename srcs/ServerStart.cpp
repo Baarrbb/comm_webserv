@@ -177,17 +177,6 @@ int	Config::ServerStart(char **envp)
 					inet_ntop(their_addr.ss_family, &(((struct sockaddr_in*)&their_addr)->sin_addr), s, sizeof s);
 					std::cout << "server: got connection from " << std::string(s) << std::endl;
 
-					// struct sockaddr_storage server_addr;
-                    // socklen_t server_size = sizeof(server_addr);
-                    // if (getsockname(poll_fds[i].fd, (struct sockaddr*)&server_addr, &server_size) == -1)
-                    // {
-                    //     std::cerr << "sockname\n";
-                    //     return 1;
-                    // }
-                    // inet_ntop(server_addr.ss_family, &(((struct sockaddr_in*)&server_addr)->sin_addr), s, sizeof s);
-                    // uint16_t port = ntohs(((struct sockaddr_in*)&server_addr)->sin_port);
-                    // std::cout << "server is :" << s << " " << port << std::endl;
-
 					poll_fds[num_fds].fd = new_fd;
 					poll_fds[num_fds].events = POLLIN;
 					num_fds++;
@@ -208,6 +197,9 @@ int	Config::ServerStart(char **envp)
 
 					this->processClientRequest(poll_fds[i].fd, std::string(s), port);
 					(void)envp;
+					close(poll_fds[i].fd);
+						poll_fds[i] = poll_fds[num_fds - 1]; 
+						num_fds--;
 					// char buffer[1024];
 					// int bytes_recv = recv(poll_fds[i].fd, buffer, sizeof(buffer), 0); // rec header
 					// if (bytes_recv <= 0)
@@ -256,7 +248,7 @@ void	Config::processClientRequest(int clientFd, std::string host, uint16_t port)
 	int valread;
 	char buffer[30000] = {0};
 	std::string reqString;
-	bool keepAlive = false;
+	// bool keepAlive = false;
 	while (1)
 	{
 		valread = recv(clientFd, buffer, 30000, 0);
@@ -264,165 +256,34 @@ void	Config::processClientRequest(int clientFd, std::string host, uint16_t port)
 		{
 			std::string bufString(buffer, 30000);
 			reqString.append(buffer, valread);
-			if (reqString.find_first_not_of("\r\n") == std::string::npos)
-			{
-				reqString.clear();
-				continue;
-			}
+			// if (reqString.find_first_not_of("\r\n") == std::string::npos)
+			// {
+			// 	reqString.clear();
+			// 	continue;
+			// }
 
 			if (reqString.find("\r\n\r\n") != std::string::npos
 				|| reqString.find("\n\n") != std::string::npos)
 			{
 				RequestClient	req(reqString);
-				try
-				{
-					Response	rep( req, this->_servers, host, port );
-					std::string	response = rep.getFull();
-					if (response.find("keep-alive") != std::string::npos)
-						keepAlive = true;
-					else
-						keepAlive = false;
+				Response	rep( req, this->_servers, host, port );
+				std::string	response = rep.getFull();
+				// if (response.find("keep-alive") != std::string::npos)
+				// 	keepAlive = true;
+				// else
+				// 	keepAlive = false;
 
-					std::cout << response << std::endl;
-					send(clientFd, response.c_str(), response.length(), 0);
+				// std::cout << response << std::endl;
 
-					if (keepAlive)
-						reqString.clear();
-					else
-						break ;
-				}
-				catch(const std::exception& e)
-				{
-					std::cout << "QUE PASA" << std::endl;
-					std::cerr << e.what() << '\n';
-				}
+				send(clientFd, response.c_str(), response.length(), 0);
+				break ;
+
+				// if (keepAlive)
+				// 	reqString.clear();
+				// else
+				// 	break ;
+
 			}
 		}
 	}
-}
-
-
-std::string	getLengthFile(std::string file)
-{
-	std::ifstream fileStream(file.c_str());
-	std::ostringstream fileContentStream;
-	fileContentStream <<  fileStream.rdbuf();
-	std::string fileContent = fileContentStream.str();
-
-	std::string	headerLength;
-	std::ostringstream lengthStream;
-	lengthStream << fileContent.length();
-	headerLength = "Content-Length: " + lengthStream.str() + "\r\n";
-
-	return headerLength;
-}
-
-std::string	badVersion( std::string file)
-{
-	std::ifstream	fileStream(file.c_str());
-	std::string		mimeType = "Content-Type: text/html\r\n";
-	std::string		reqResponse = "HTTP/1.1 505 HTTP Version Not Supported\r\n";
-	std::string		connectionStatus = "Connection: close\r\n";
-
-	reqResponse += mimeType;
-
-	std::ostringstream fileContentStream;
-	fileContentStream <<  fileStream.rdbuf();
-	std::string fileContent = fileContentStream.str();
-
-	reqResponse += getLengthFile(file);
-	reqResponse += connectionStatus;
-	reqResponse += "\r\n";
-	reqResponse += fileContent;
-
-	return reqResponse;
-}
-
-std::string	badRequest( std::string file )
-{
-	std::ifstream	fileStream(file.c_str());
-	std::string		mimeType = "Content-Type: text/html\r\n";
-	std::string		reqResponse = "HTTP/1.1 400 Bad Request\r\n";
-	std::string		connectionStatus = "Connection: close\r\n";
-
-	reqResponse += mimeType;
-
-	std::ostringstream fileContentStream;
-	fileContentStream <<  fileStream.rdbuf();
-	std::string fileContent = fileContentStream.str();
-
-	reqResponse += getLengthFile(file);
-	reqResponse += connectionStatus;
-	reqResponse += "\r\n";
-	reqResponse += fileContent;
-
-	return reqResponse;
-}
-
-std::string	notAllowed( std::string file )
-{
-	std::ifstream	fileStream(file.c_str());
-	std::string		mimeType = "Content-Type: text/html\r\n";
-	std::string		reqResponse = "HTTP/1.1 405 Not Allowed\r\n";
-	std::string		connectionStatus = "Connection: keep-alive\r\n";
-
-	reqResponse += mimeType;
-
-	std::ostringstream fileContentStream;
-	fileContentStream <<  fileStream.rdbuf();
-	std::string fileContent = fileContentStream.str();
-
-	reqResponse += getLengthFile(file);
-	reqResponse += connectionStatus;
-	reqResponse += "\r\n";
-	reqResponse += fileContent;
-
-	return reqResponse;
-}
-
-std::string	reqResponse(RequestClient &req)
-{
-	std::string	mimeType;
-	std::string	connectionStatus = "Connection: keep-alive\r\n";
-	std::string	reqResponse = "HTTP/1.1 ";
-	std::string	filename = req.getTarget();
-
-	std::ifstream fileStream(filename.c_str());
-	if (!fileStream.is_open())
-	{
-		req.setError(404);
-		req.setTarget("not_found/404.html");
-		filename = req.getTarget();
-		fileStream.open(filename.c_str());
-	}
-
-	std::string ext = filename.substr(filename.find(".") + 1, filename.length() - filename.find("."));
-	if (!ext.compare("html"))
-		mimeType = "Content-Type: text/html\r\n";
-	if (!ext.compare("css"))
-		mimeType = "Content-Type: text/css\r\n";
-	if (!ext.compare("js"))
-		mimeType = "Content-Type: application/javascript\r\n";
-	if (!ext.compare("json"))
-		mimeType = "Content-Type: application/json\r\n";
-	if (!ext.compare("png"))
-		mimeType = "Content-Type: image/png\r\n";
-
-	if (!req.getError())
-		reqResponse.append("200 OK\r\n");
-	else if (req.getError() == 404)
-		reqResponse.append("404 JSPLUS\r\n");
-		
-	reqResponse += mimeType;
-
-	std::ostringstream fileContentStream;
-	fileContentStream <<  fileStream.rdbuf();
-	std::string fileContent = fileContentStream.str();
-
-	reqResponse += getLengthFile(filename);
-	reqResponse += connectionStatus;
-	reqResponse += "\r\n";
-	reqResponse += fileContent;
-
-	return reqResponse;
 }

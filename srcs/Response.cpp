@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/15 18:00:18 by marvin            #+#    #+#             */
-/*   Updated: 2024/10/15 23:17:45 by marvin           ###   ########.fr       */
+/*   Updated: 2024/10/16 01:01:08 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,17 +17,22 @@ Response::Response( RequestClient req, std::vector<Server*> serv, std::string ho
 {
 	std::cout << "host:port " << host << ":" << port << std::endl;
 
+	Server	server;
 	try
 	{
-		Server	server;
+		int err = req.getError();
 		server = this->findConfig(serv, host, port);
-		// std::cout << "2 " << server << std::endl;
-		this->addBody(server, req.getTarget());
+		this->file = this->findFile(server, req.getTarget(), err);
 	}
-	catch(...)
+	catch(RequestClient::ErrorRequest& e)
 	{
-		return ;
+		req.setError(e.getError());
+		req.setTarget(e.getTarget());
+		req.setMsgError(e.getMsg());
+		this->file = req.getTarget();
 	}
+	
+	this->addBody(this->file);
 
 	if (!req.getError())
 	{
@@ -42,8 +47,10 @@ Response::Response( RequestClient req, std::vector<Server*> serv, std::string ho
 		this->msg = req.getMsgError();
 	}
 	
-	this->full = this->version + " " + this->code + " " + this->msg + "\n\n";
-	this->full += this->body;
+	this->full = this->version + " " + this->code + " " + this->msg + "\n";
+	this->full += "Content-Length: " + lengthBody() + "\n";
+	this->full += "\n";
+	this->full += this->body + "\n";
 }
 
 Response::~Response( void )
@@ -60,15 +67,9 @@ Server	Response::findConfig( std::vector<Server*> serv, std::string host, uint16
 	{
 		for (size_t j = 0; j < serv[i]->GetPort().size(); j++ )
 		{
-			std::cout << i << ":" << serv[i]->GetHost(j) << std::endl;
-			std::cout << i << ":" << serv[i]->GetPort(j) << std::endl;
-
 			if ((serv[i]->GetHost(j).compare(host) || serv[i]->GetHost(j).compare("0.0.0.0"))
 				&& serv[i]->GetPort(j).compare(sport))
-				{
-					// std::cout << "1 " << *serv[i] << std::endl;
 					return (*serv[i]);
-				}
 		}
 	}
 
@@ -76,14 +77,17 @@ Server	Response::findConfig( std::vector<Server*> serv, std::string host, uint16
 	throw Response::NoMatchingConfig();
 }
 
-
-void	Response::addBody( Server serv, std::string target )
+std::string	Response::lengthBody( void )
 {
-	std::cout << "KKKKKKKKKKK" << std::endl;
-	std::cout << serv << std::endl;
+	std::stringstream len;
+	len << this->body.length();
+	return len.str();
+}
+
+std::string	Response::findFile( Server serv, std::string target, int err )
+{
 	std::string			path = serv.GetRoot();
 	std::ifstream		file;
-	std::stringstream	fileStream;
 	std::string			filename;
 	
 	if (!target.compare("/"))
@@ -91,27 +95,35 @@ void	Response::addBody( Server serv, std::string target )
 		size_t i = 0;
 		for(; i < serv.GetIndex().size(); i++)
 		{
-			std::cout << "index " << serv.GetIndex(i) << std::endl;
 			filename = path.append("/").append(serv.GetIndex(i));
-			std::cout << "filename " << filename << std::endl;
 			file.open(filename.c_str());
 			if (file.is_open())
-				break ;
+			{
+				file.close();
+				return filename;
+			}
 		}
 		if (i == serv.GetIndex().size())
 			throw RequestClient::ErrorRequest(404, "./not_found/404.html", "Not Found");
 	}
-	else
+	else if (!err)
 		filename = path.append(target);
 	
-	std::cout << "j'ai segfault AVANT ??" << std::endl;
-
-	if (!target.compare("/"))
-		file.open(filename.c_str());
+	std::cout << filename << std::endl;
+	file.open(filename.c_str());
 	if (!file.is_open())
 		throw RequestClient::ErrorRequest(404, "./not_found/404.html", "Not Found");
-	std::cout << "j'ENCORE segfault AVANT ??" << std::endl;
+
+	file.close();
+	return filename;
+}
+
+void	Response::addBody(std::string filename)
+{
+	std::ifstream		file(filename.c_str());
+	std::stringstream	fileStream;
 	fileStream << file.rdbuf();
+
 	std::string	fileContent = fileStream.str();
 	this->body = fileContent;
 }

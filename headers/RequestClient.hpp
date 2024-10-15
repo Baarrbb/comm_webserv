@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 17:41:14 by marvin            #+#    #+#             */
-/*   Updated: 2024/10/15 18:09:00 by marvin           ###   ########.fr       */
+/*   Updated: 2024/10/16 01:24:10 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,6 @@
 #define REQUESTCLIENT_HPP
 
 #include "Webserv.hpp"
-// #include "Server.hpp"
-// #include <exception>
-// #include <vector>
-// #include <map>
-
-
 
 class RequestClient
 {
@@ -27,12 +21,18 @@ class RequestClient
 		RequestClient(std::string &);
 		~RequestClient( void );
 
-		std::string	getTarget( void );
-		int			getError( void );
-		std::string	getMsgError( void );
+		int									getError( void );
+		std::string							getMsgError( void );
+		std::string							getMethod( void );
+		std::string							getTarget( void );
+		std::string							getHost( void );
+		std::string							getOptions( std::string key );
+		std::map<std::string, std::string>	getOptions( void );
+		
 
-		void		setTarget(std::string);
-		void		setError(int);
+		void		setTarget( std::string );
+		void		setError( int );
+		void		setMsgError( std::string );
 
 	private:
 		RequestClient( void );
@@ -87,10 +87,5 @@ class RequestClient
 				std::string	msg;
 		};
 };
-
-std::string	badRequest( std::string  );
-std::string	notAllowed( std::string  );
-std::string	badVersion( std::string );
-std::string	reqResponse(RequestClient &);
 
 #endif
