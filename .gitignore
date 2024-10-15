@@ -1,0 +1,5 @@
+dependence/
+*.d
+obj/
+*.o
+webserv
