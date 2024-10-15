@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/15 18:00:18 by marvin            #+#    #+#             */
-/*   Updated: 2024/10/15 21:08:01 by marvin           ###   ########.fr       */
+/*   Updated: 2024/10/15 23:17:45 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,15 @@ Response::Response( RequestClient req, std::vector<Server*> serv, std::string ho
 
 	try
 	{
-		Server	server = this->findConfig(serv, host, port);
+		Server	server;
+		server = this->findConfig(serv, host, port);
+		// std::cout << "2 " << server << std::endl;
+		this->addBody(server, req.getTarget());
 	}
 	catch(...)
 	{
 		return ;
 	}
-
-	this->addBody( serv, req.getTarget() );
 
 	if (!req.getError())
 	{
@@ -40,6 +41,9 @@ Response::Response( RequestClient req, std::vector<Server*> serv, std::string ho
 		this->code = ss.str();
 		this->msg = req.getMsgError();
 	}
+	
+	this->full = this->version + " " + this->code + " " + this->msg + "\n\n";
+	this->full += this->body;
 }
 
 Response::~Response( void )
@@ -61,18 +65,55 @@ Server	Response::findConfig( std::vector<Server*> serv, std::string host, uint16
 
 			if ((serv[i]->GetHost(j).compare(host) || serv[i]->GetHost(j).compare("0.0.0.0"))
 				&& serv[i]->GetPort(j).compare(sport))
-					return *serv[i];
+				{
+					// std::cout << "1 " << *serv[i] << std::endl;
+					return (*serv[i]);
+				}
 		}
 	}
 
+	std::cout << "G PAS DE CONFIG ??" << std::endl;
 	throw Response::NoMatchingConfig();
 }
 
 
 void	Response::addBody( Server serv, std::string target )
 {
-	(void)serv;
-	(void)target;
+	std::cout << "KKKKKKKKKKK" << std::endl;
+	std::cout << serv << std::endl;
+	std::string			path = serv.GetRoot();
+	std::ifstream		file;
+	std::stringstream	fileStream;
+	std::string			filename;
+	
+	if (!target.compare("/"))
+	{
+		size_t i = 0;
+		for(; i < serv.GetIndex().size(); i++)
+		{
+			std::cout << "index " << serv.GetIndex(i) << std::endl;
+			filename = path.append("/").append(serv.GetIndex(i));
+			std::cout << "filename " << filename << std::endl;
+			file.open(filename.c_str());
+			if (file.is_open())
+				break ;
+		}
+		if (i == serv.GetIndex().size())
+			throw RequestClient::ErrorRequest(404, "./not_found/404.html", "Not Found");
+	}
+	else
+		filename = path.append(target);
+	
+	std::cout << "j'ai segfault AVANT ??" << std::endl;
+
+	if (!target.compare("/"))
+		file.open(filename.c_str());
+	if (!file.is_open())
+		throw RequestClient::ErrorRequest(404, "./not_found/404.html", "Not Found");
+	std::cout << "j'ENCORE segfault AVANT ??" << std::endl;
+	fileStream << file.rdbuf();
+	std::string	fileContent = fileStream.str();
+	this->body = fileContent;
 }
 
 std::string Response::getFull( void )

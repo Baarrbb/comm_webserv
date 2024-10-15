@@ -35,7 +35,21 @@ Server::Server (const Server &copy)
 Server & Server::operator = (const Server &copy)
 {
 	if (this != &copy)
+	{
+		this->_locations = copy._locations;
+		this->server_name = copy.server_name;
+		this->port = copy.port;
+		this->host = copy.host;
+		this->index = copy.index;
+		this->root = copy.root;
+		this->allow_methods = copy.allow_methods;
+		this->yipi = copy.yipi;
+		this->alias = copy.alias;
+		this->cgi_pass = copy.cgi_pass;
+		this->client_body_buffer_size = copy.client_body_buffer_size;
+		this->error_page = copy.error_page;
 		this->test = copy.test;
+	}
 	return *this;
 }
 

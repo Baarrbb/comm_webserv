@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/15 17:36:45 by marvin            #+#    #+#             */
-/*   Updated: 2024/10/15 20:51:12 by marvin           ###   ########.fr       */
+/*   Updated: 2024/10/15 22:39:19 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ class Response
 		std::string	full;
 
 		Server	findConfig( std::vector<Server*>, std::string, uint16_t );
-		void	addBody( std::vector<Server*>, std::string );
+		void	addBody( Server, std::string );
 
 	class NoMatchingConfig : public std::exception
 	{

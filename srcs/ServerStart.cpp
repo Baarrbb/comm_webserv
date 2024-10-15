@@ -293,6 +293,7 @@ void	Config::processClientRequest(int clientFd, std::string host, uint16_t port)
 				}
 				catch(const std::exception& e)
 				{
+					std::cout << "QUE PASA" << std::endl;
 					std::cerr << e.what() << '\n';
 				}
 				
