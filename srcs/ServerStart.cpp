@@ -296,17 +296,6 @@ void	Config::processClientRequest(int clientFd, std::string host, uint16_t port)
 					std::cout << "QUE PASA" << std::endl;
 					std::cerr << e.what() << '\n';
 				}
-				
-				// if (req.getError() == 400)
-				// 	response = badRequest( req.getTarget() );
-				// else if (req.getError() == 405)
-				// 	response = notAllowed( req.getTarget() );
-				// else if (req.getError() == 505)
-				// 	response = badVersion( req.getTarget() );
-				// else
-				// 	response = reqResponse(req);
-				
-				
 			}
 		}
 	}

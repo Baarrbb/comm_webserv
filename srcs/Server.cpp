@@ -36,7 +36,15 @@ Server & Server::operator = (const Server &copy)
 {
 	if (this != &copy)
 	{
-		this->_locations = copy._locations;
+		 for (size_t i = 0; i < _locations.size(); ++i)
+			delete _locations[i];
+		_locations.clear();
+		std::vector<Location*> loc;
+		for (size_t i = 0; i < copy._locations.size(); i++)
+		{
+			this->_locations.push_back(new Location(*copy._locations[i]));
+		}
+
 		this->server_name = copy.server_name;
 		this->port = copy.port;
 		this->host = copy.host;
