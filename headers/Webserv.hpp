@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/15 16:42:39 by marvin            #+#    #+#             */
-/*   Updated: 2024/10/15 16:45:38 by marvin           ###   ########.fr       */
+/*   Updated: 2024/10/15 18:00:43 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@
 #include <cstring>
 #include <iterator>
 
-
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/types.h>
@@ -41,5 +40,7 @@
 #include "Server.hpp"
 #include "Config.hpp"
 #include "ALocationheredite.hpp"
+#include "RequestClient.hpp"
+#include "Response.hpp"
 
 #endif

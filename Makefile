@@ -60,6 +60,8 @@ SRC = \
 	$(SRC_DIR)/ServerException.cpp \
 	$(SRC_DIR)/ServerSetGet.cpp \
 	$(SRC_DIR)/ServerStart.cpp \
+	$(SRC_DIR)/RequestClient.cpp \
+	$(SRC_DIR)/Response.cpp \
 	$(SRC_DIR)/main.cpp
 
 # $(SRC_DIR)/RequestClient.cpp \

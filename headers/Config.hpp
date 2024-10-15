@@ -46,6 +46,7 @@ class Config
 		int						test;
 		std::string				_filename;
 		std::vector<Server*>		_servers;
+		void				processClientRequest( int, std::string, uint16_t );
 };
 
 std::ostream	&operator<<(std::ostream &out, Config &to_write); //rajouter le const apr les tests
